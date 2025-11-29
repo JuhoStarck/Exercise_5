@@ -16,7 +16,7 @@ export function AddTodo({ value, onChange, onSave }: AddTodoProps) {
         onChangeText={onChange}
         placeholder='Add Todo'
       />
-      <Button title='Save' onPress={onSave} />
+      <Button title='Add' onPress={onSave} />
     </View>
   )
 }
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 4,
     padding: 8,
+    marginRight: 4,
   }
 })
 

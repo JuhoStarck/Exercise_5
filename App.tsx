@@ -1,51 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import AddTodo from './components/AddTodo';
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 import TodoList from './components/TodoList';
-import { Item } from './types/Item'
+import { useTodos } from './hooks/useTodos';
 
 const STORAGE_KEY = 'TODO_LIST_ITEMS'
 
 export default function App() {
-  const [todos, setTodos] = useState<Item[]>([])
+  const { state, addTodo, toggleTodo, removeTodo } = useTodos()
   const [input, setInput] = useState('')
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const json = await AsyncStorage.getItem(STORAGE_KEY)
-        if (json) setTodos(JSON.parse(json))
-      } catch (e) {
-        
-      }
-    })
-    ()
-  }, [])
-
-  useEffect(() => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  }, [todos])
-
-  const addTodo = () => {
+  const handleAdd = () => {
     if (input.trim()) {
-      setTodos(prev => [
-        ...prev,
-        { id: Date.now().toString(), name: input.trim(), done: false}
-      ])
+      addTodo(input.trim())
       setInput('')
     }
-  }
-
-  const toggleTodo = (id: string) => {
-    setTodos(prev => 
-      prev.map(todo =>
-        todo.id === id
-          ? { ...todo, done: !todo.done }
-          : todo
-      )
-    )
   }
 
   return (
@@ -54,9 +24,13 @@ export default function App() {
       <AddTodo 
         value={input}
         onChange={setInput}
-        onSave={addTodo}
+        onSave={handleAdd}
       />
-      <TodoList items={todos} onToggle={toggleTodo} />
+      <TodoList 
+        items={state.todos} 
+        onToggle={toggleTodo}
+        onRemove={removeTodo} 
+      />
       <StatusBar style="auto" />
     </View>
   );
